@@ -1,16 +1,15 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useTable } from 'react-table';
 
 interface Score {
-  [key: number]: number[][];
+  [key: number]: (number | string)[][];
 }
 
-const Game: React.FC = () => {
-  const router = useRouter();
+const GameContent: React.FC = () => {
   const searchParams = useSearchParams();
   const teams = parseInt(searchParams.get('teams') || '4');
   const balls = parseInt(searchParams.get('balls') || '3');
@@ -18,12 +17,12 @@ const Game: React.FC = () => {
   const [scores, setScores] = useState<Score>(() => {
     const initialScores: Score = {};
     for (let i = 1; i <= teams; i++) {
-      initialScores[i] = Array.from({ length: balls }, () => Array(18).fill(0));
+      initialScores[i] = Array.from({ length: balls }, () => Array(18).fill(''));
     }
     return initialScores;
   });
 
-  const updateScore = (team: number, ball: number, hole: number, score: number) => {
+  const updateScore = (team: number, ball: number, hole: number, score: string) => {
     setScores((prevScores) => {
       const newScores = { ...prevScores };
       newScores[team][ball][hole] = score;
@@ -32,12 +31,12 @@ const Game: React.FC = () => {
   };
 
   const handleScoreChange = (e: React.ChangeEvent<HTMLInputElement>, team: number, ball: number, hole: number) => {
-    const score = parseInt(e.target.value) || 0;
+    const score = e.target.value;
     updateScore(team, ball, hole, score);
   };
 
-  const calculateTotal = (ballScores: number[]): number => {
-    return ballScores.reduce((total, score) => total + score, 0);
+  const calculateTotal = (ballScores: (number | string)[]): number => {
+    return ballScores.reduce((total, score) => total + (parseInt(score as string) || 0), 0);
   };
 
   const handleSubmit = () => {
@@ -71,7 +70,7 @@ const Game: React.FC = () => {
         ballScores.forEach((score, holeIndex) => {
           rowData[`hole${holeIndex + 1}`] = (
             <input
-              type="number"
+              type="text"
               value={score}
               onChange={(e) => handleScoreChange(e, parseInt(team), ballIndex, holeIndex)}
               className="input border p-1 rounded w-full text-center"
@@ -104,7 +103,7 @@ const Game: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="title">Golf Scorecard</h1>
-      <div className="overflow-x-auto">
+      <div className="table-container">
         <table {...getTableProps()} className="table-auto w-full text-center mb-4">
           <thead>
             {headerGroups.map(headerGroup => (
@@ -147,5 +146,11 @@ const Game: React.FC = () => {
     </div>
   );
 };
+
+const Game: React.FC = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <GameContent />
+  </Suspense>
+);
 
 export default Game;

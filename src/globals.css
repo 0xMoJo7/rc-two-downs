@@ -10,7 +10,7 @@
 
 @layer components {
   .container {
-    @apply max-w-3xl mx-auto p-4 bg-gray-900 shadow-md rounded-lg flex flex-col items-center;
+    @apply max-w-full mx-auto p-4 bg-gray-900 shadow-md rounded-lg flex flex-col items-center;
   }
 
   .title {
@@ -25,12 +25,20 @@
     @apply mt-2 p-2 text-center border rounded-md bg-white text-black w-full max-w-xs;
   }
 
+  .score-input {
+    @apply p-1 rounded w-8 text-center;
+  }
+
   .button {
-    @apply bg-dark-blue text-white border-2 border-white hover:bg-blue-700 mt-4 w-full p-2 rounded text-lg font-bold text-center;
+    @apply bg-dark-blue text-white border-2 border-white hover:bg-blue-700 mt-4 w-full p-2 rounded text-lg font-bold text-center max-w-xs;
+  }
+
+  .table-container {
+    @apply w-full overflow-x-auto;
   }
 
   .table-auto {
-    @apply w-full text-center border-collapse;
+    @apply min-w-max text-center border-collapse;
   }
 
   th, td {
@@ -51,5 +59,39 @@
 
   .spacer-cell {
     background-color: gray;
+  }
+
+  @media (max-width: 640px) {
+    .container {
+      @apply p-2;
+    }
+
+    .title {
+      @apply text-2xl;
+    }
+
+    th, td {
+      @apply text-xs px-1 py-0.5;
+    }
+
+    .input {
+      @apply text-xs;
+    }
+
+    .score-input {
+      @apply w-8 text-xs;
+    }
+
+    .button {
+      @apply text-sm p-1 max-w-xs;
+    }
+
+    .table-container {
+      @apply overflow-x-auto;
+    }
+
+    .table-auto {
+      @apply min-w-full;
+    }
   }
 }

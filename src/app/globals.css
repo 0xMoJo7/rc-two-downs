@@ -2,6 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-dark-green text-white min-h-screen flex items-center justify-center;
+@layer base {
+  body {
+    @apply bg-dark-green text-white min-h-screen flex items-center justify-center;
+  }
+}
+
+@layer components {
+  .container {
+    @apply max-w-3xl mx-auto p-4 bg-gray-900 shadow-md rounded-lg flex flex-col items-center;
+  }
+
+  .title {
+    @apply text-3xl font-bold mb-4 text-center;
+  }
+
+  .label {
+    @apply text-lg font-medium mb-1;
+  }
+
+  .input, .select {
+    @apply mt-2 p-2 text-center border rounded-md bg-white text-black w-full max-w-xs;
+  }
+
+  .button {
+    @apply bg-dark-blue text-white border-2 border-white hover:bg-blue-700 mt-4 w-full p-2 rounded text-lg font-bold text-center;
+  }
+
+  .table-auto {
+    @apply w-full text-center border-collapse;
+  }
+
+  th, td {
+    @apply border px-2 py-1;
+  }
+
+  th {
+    @apply bg-gray-800 text-white;
+  }
+
+  td {
+    @apply bg-gray-700 text-white;
+  }
+
+  .spacer-row {
+    height: 1rem;
+  }
+
+  .spacer-cell {
+    background-color: gray;
+  }
+
+  @media (max-width: 640px) {
+    .container {
+      @apply p-2;
+    }
+
+    .title {
+      @apply text-2xl;
+    }
+
+    th, td {
+      @apply text-xs px-1 py-0.5;
+    }
+
+    .input {
+      @apply text-xs;
+    }
+
+    .button {
+      @apply text-sm p-1;
+    }
+
+    .overflow-x-auto {
+      @apply -mx-4 sm:mx-0;
+    }
+  }
 }
