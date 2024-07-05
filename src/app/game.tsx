@@ -1,11 +1,11 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 
 interface Score {
-  [key: number]: number[];
+  [key: number]: number[][];
 }
 
 const Game: React.FC = () => {
@@ -17,15 +17,15 @@ const Game: React.FC = () => {
   const [scores, setScores] = useState<Score>(() => {
     const initialScores: Score = {};
     for (let i = 1; i <= teams; i++) {
-      initialScores[i] = Array(balls).fill(0);
+      initialScores[i] = Array.from({ length: balls }, () => Array(18).fill(0));
     }
     return initialScores;
   });
 
-  const updateScore = (team: number, ball: number, score: number) => {
+  const updateScore = (team: number, ball: number, hole: number, score: number) => {
     setScores((prevScores) => {
       const newScores = { ...prevScores };
-      newScores[team][ball - 1] = score;
+      newScores[team][ball][hole] = score;
       return newScores;
     });
   };
@@ -37,19 +37,40 @@ const Game: React.FC = () => {
 
   return (
     <div className="container">
-      <h1 className="title">Game Page</h1>
+      <h1 className="title">Golf Scorecard</h1>
       {Object.keys(scores).map((team) => (
         <div key={team} className="mb-8 w-full">
           <h2 className="text-2xl font-semibold mb-4">Team {team}</h2>
-          {scores[team].map((score, index) => (
-            <div key={index} className="flex items-center justify-center mb-4">
-              <label className="mr-2">{index + 1} Ball:</label>
-              <input
-                type="number"
-                value={score}
-                onChange={(e) => updateScore(parseInt(team), index + 1, parseInt(e.target.value))}
-                className="input border p-2 rounded w-20 text-center"
-              />
+          {scores[team].map((ballScores, ballIndex) => (
+            <div key={ballIndex} className="mb-4">
+              <h3 className="text-xl font-semibold mb-2">Ball {ballIndex + 1}</h3>
+              <div className="overflow-x-auto">
+                <table className="table-auto w-full text-center mb-4">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-2">Hole</th>
+                      {Array.from({ length: 18 }, (_, i) => (
+                        <th key={i} className="px-4 py-2">{i + 1}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="px-4 py-2">Score</td>
+                      {ballScores.map((score, holeIndex) => (
+                        <td key={holeIndex} className="px-4 py-2">
+                          <input
+                            type="number"
+                            value={score}
+                            onChange={(e) => updateScore(parseInt(team), ballIndex, holeIndex, parseInt(e.target.value))}
+                            className="input border p-1 rounded w-16 text-center"
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           ))}
         </div>

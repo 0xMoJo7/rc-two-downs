@@ -10,11 +10,11 @@
 
 @layer components {
   .container {
-    @apply max-w-md mx-auto p-6 bg-gray-900 shadow-md rounded-lg flex flex-col items-center;
+    @apply max-w-3xl mx-auto p-4 bg-gray-900 shadow-md rounded-lg flex flex-col items-center;
   }
 
   .title {
-    @apply text-6xl font-bold mb-6 text-center;
+    @apply text-3xl font-bold mb-4 text-center;
   }
 
   .label {
@@ -26,6 +26,22 @@
   }
 
   .button {
-    @apply bg-dark-blue text-white border-2 border-white hover:bg-blue-700 mt-6 w-full p-4 rounded text-xl font-bold text-center;
+    @apply bg-dark-blue text-white border-2 border-white hover:bg-blue-700 mt-4 w-full p-2 rounded text-lg font-bold text-center;
+  }
+
+  .table-auto {
+    @apply w-full text-center border-collapse;
+  }
+
+  th, td {
+    @apply border px-2 py-1;
+  }
+
+  th {
+    @apply bg-gray-800 text-white;
+  }
+
+  td {
+    @apply bg-gray-700 text-white;
   }
 }

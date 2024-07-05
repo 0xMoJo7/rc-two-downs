@@ -17,7 +17,7 @@ const Home: React.FC = () => {
   }, [balls]);
 
   return (
-    <div className="container">
+    <div className="container mx-auto px-4 py-8">
       <h1 className="title">RC Auto Two Down Calculator</h1>
       <div className="mb-8 text-center w-full">
         <label className="label block mb-4">Number of Teams:</label>
