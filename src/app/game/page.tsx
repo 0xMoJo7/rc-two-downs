@@ -13,6 +13,7 @@ const GameContent: React.FC = () => {
   const searchParams = useSearchParams();
   const teams = parseInt(searchParams.get('teams') || '4');
   const balls = parseInt(searchParams.get('balls') || '3');
+  const betValues = { 1: 20, 2: 10, 3: 10, 4: 10 };
 
   const [scores, setScores] = useState<Score>(() => {
     const initialScores: Score = {};
@@ -21,6 +22,9 @@ const GameContent: React.FC = () => {
     }
     return initialScores;
   });
+
+  const [bets, setBets] = useState<string[]>([]);
+  const [totalSum, setTotalSum] = useState<number>(0);
 
   const updateScore = (team: number, ball: number, hole: number, score: string) => {
     setScores((prevScores) => {
@@ -41,9 +45,73 @@ const GameContent: React.FC = () => {
     return ballScores.reduce((total, score) => total + (parseInt(score as string) || 0), 0);
   };
 
+  const calculateBets = () => {
+    const calculateForRange = (start: number, end: number) => {
+      let results: string[] = [];
+      let totalSum = 0;
+      for (let i = 1; i <= teams; i++) {
+        for (let j = i + 1; j <= teams; j++) {
+          for (let ball = 0; ball < balls; ball++) {
+            let team1Wins = 0;
+            let team2Wins = 0;
+            let currentBets = [0];
+            for (let hole = start; hole <= end; hole++) {
+              const team1Score = parseInt(scores[i][ball][hole - 1] as string) || 0;
+              const team2Score = parseInt(scores[j][ball][hole - 1] as string) || 0;
+              if (team1Score < team2Score) {
+                team1Wins++;
+                currentBets = currentBets.map(bet => bet + 1);
+              } else if (team1Score > team2Score) {
+                team2Wins++;
+                currentBets = currentBets.map(bet => bet - 1);
+              }
+              currentBets = currentBets.filter(bet => Math.abs(bet) < 2);
+              if (team1Wins - team2Wins >= 2) {
+                currentBets.push(0);
+              }
+            }
+
+            let netWinnings = 0;
+            let betSummary = '';
+            let betValue = betValues[ball + 1] || 10;
+
+            currentBets.forEach((bet, idx) => {
+              if (bet > 0) {
+                netWinnings += betValue;
+                betSummary += `${bet}-0 `;
+              } else if (bet < 0) {
+                netWinnings -= betValue;
+                betSummary += `0-${Math.abs(bet)} `;
+              }
+            });
+
+            if (team1Wins > team2Wins && team1Wins - team2Wins === 1 && end === 9 || end === 18) {
+              netWinnings += betValue;
+            }
+
+            let summary = currentBets.map(bet => bet + (bet > 0 ? '-0' : '')).join(' ');
+            totalSum += netWinnings;
+
+            results.push(
+              `Ball ${ball + 1} (${betValue}$) Team ${i} vs Team ${j} (Holes ${start}-${end}): ` +
+              `<span class="font-bold">${team1Wins} - ${team2Wins}</span> : ` +
+              `<span class="${netWinnings > 0 ? 'text-green-500' : 'text-red-500'}">` +
+              `${netWinnings > 0 ? '+' : ''}${netWinnings}$</span>`
+            );
+          }
+        }
+      }
+      return { results, totalSum };
+    };
+
+    const frontNineBets = calculateForRange(1, 9);
+    const backNineBets = calculateForRange(10, 18);
+    setBets([...frontNineBets.results, ...backNineBets.results]);
+    setTotalSum(frontNineBets.totalSum + backNineBets.totalSum);
+  };
+
   const handleSubmit = () => {
-    // Placeholder for submission logic
-    console.log('Scores submitted:', scores);
+    calculateBets();
   };
 
   const columns = useMemo(
@@ -146,6 +214,15 @@ const GameContent: React.FC = () => {
       <Link href="/">
         <button className="button max-w-xs mt-4">Back to Game Setup</button>
       </Link>
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4">Bet Results</h2>
+        <ul>
+          {bets.map((bet, index) => (
+            <li key={index} className="mb-2" dangerouslySetInnerHTML={{ __html: bet }}></li>
+          ))}
+        </ul>
+        <h2 className="text-xl font-bold mt-4">Total: {totalSum >= 0 ? '+' : ''}{totalSum}$</h2>
+      </div>
     </div>
   );
 };
