@@ -1,28 +1,42 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Home: React.FC = () => {
   const [teams, setTeams] = useState<number>(4);
   const [balls, setBalls] = useState<number>(3);
   const [betValues, setBetValues] = useState<{ [key: number]: number }>({ 1: 20, 2: 10, 3: 10, 4: 10 });
 
+  useEffect(() => {
+    const newBetValues: { [key: number]: number } = { 1: 20 };
+    for (let i = 2; i <= balls; i++) {
+      newBetValues[i] = 10;
+    }
+    setBetValues(newBetValues);
+  }, [balls]);
+
   return (
     <div className="container">
       <h1 className="title">RC Auto Two Down Calculator</h1>
       <div className="mb-8 text-center w-full">
         <label className="label block mb-4">Number of Teams:</label>
-        <input type="number" value={teams} onChange={(e) => setTeams(parseInt(e.target.value))} min={2} max={6} className="input border p-2 rounded mx-auto" />
+        <select value={teams} onChange={(e) => setTeams(parseInt(e.target.value))} className="select border p-2 rounded mx-auto">
+          {[...Array(6)].map((_, i) => (
+            <option key={i + 2} value={i + 2}>
+              {i + 2}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="mb-8 text-center w-full">
         <label className="label block mb-4">Number of Balls:</label>
         <select value={balls} onChange={(e) => setBalls(parseInt(e.target.value))} className="select border p-2 rounded mx-auto">
-          <option value={2}>2</option>
-          <option value={3}>3</option>
-          <option value={4}>4</option>
-          <option value={5}>4</option>
-          <option value={6}>4</option>
+          {[...Array(4)].map((_, i) => (
+            <option key={i + 2} value={i + 2}>
+              {i + 2}
+            </option>
+          ))}
         </select>
       </div>
       <div className="mb-8 text-center w-full">
