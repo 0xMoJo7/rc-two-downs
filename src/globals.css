@@ -14,7 +14,7 @@
   }
 
   .title {
-    @apply text-7xl font-bold mb-6 text-center;
+    @apply text-6xl font-bold mb-6 text-center;
   }
 
   .label {

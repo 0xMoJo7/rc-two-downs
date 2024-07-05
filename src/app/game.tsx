@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { firebaseApp } from '../../firebase';
 
 interface Score {
   [key: number]: number[];
