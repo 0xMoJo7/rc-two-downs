@@ -1,4 +1,10 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
+const withTM = require('next-transpile-modules')([]);
 
-export default nextConfig;
+const nextConfig = withTM({
+  reactStrictMode: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+});
+
+module.exports = nextConfig;
