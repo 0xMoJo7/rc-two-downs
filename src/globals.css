@@ -44,4 +44,12 @@
   td {
     @apply bg-gray-700 text-white;
   }
+
+  .spacer-row {
+    height: 1rem;
+  }
+
+  .spacer-cell {
+    background-color: gray;
+  }
 }
