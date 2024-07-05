@@ -18,12 +18,12 @@ const Game: React.FC = () => {
   const [scores, setScores] = useState<Score>(() => {
     const initialScores: Score = {};
     for (let i = 1; i <= teams; i++) {
-      initialScores[i] = Array.from({ length: balls }, () => Array(18).fill(''));
+      initialScores[i] = Array.from({ length: balls }, () => Array(18).fill(0));
     }
     return initialScores;
   });
 
-  const updateScore = (team: number, ball: number, hole: number, score: string) => {
+  const updateScore = (team: number, ball: number, hole: number, score: number) => {
     setScores((prevScores) => {
       const newScores = { ...prevScores };
       newScores[team][ball][hole] = score;
@@ -32,12 +32,12 @@ const Game: React.FC = () => {
   };
 
   const handleScoreChange = (e: React.ChangeEvent<HTMLInputElement>, team: number, ball: number, hole: number) => {
-    const score = e.target.value;
+    const score = parseInt(e.target.value) || 0;
     updateScore(team, ball, hole, score);
   };
 
-  const calculateTotal = (ballScores: string[]): number => {
-    return ballScores.reduce((total, score) => total + (parseInt(score) || 0), 0);
+  const calculateTotal = (ballScores: number[]): number => {
+    return ballScores.reduce((total, score) => total + score, 0);
   };
 
   const handleSubmit = () => {
@@ -71,7 +71,7 @@ const Game: React.FC = () => {
         ballScores.forEach((score, holeIndex) => {
           rowData[`hole${holeIndex + 1}`] = (
             <input
-              type="text"
+              type="number"
               value={score}
               onChange={(e) => handleScoreChange(e, parseInt(team), ballIndex, holeIndex)}
               className="input border p-1 rounded w-full text-center"
@@ -149,4 +149,3 @@ const Game: React.FC = () => {
 };
 
 export default Game;
-
