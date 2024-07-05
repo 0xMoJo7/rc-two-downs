@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useTable } from 'react-table';
 
@@ -9,8 +9,7 @@ interface Score {
   [key: number]: number[][];
 }
 
-const Game: React.FC = () => {
-  const router = useRouter();
+const GameContent: React.FC = () => {
   const searchParams = useSearchParams();
   const teams = parseInt(searchParams.get('teams') || '4');
   const balls = parseInt(searchParams.get('balls') || '3');
@@ -18,12 +17,12 @@ const Game: React.FC = () => {
   const [scores, setScores] = useState<Score>(() => {
     const initialScores: Score = {};
     for (let i = 1; i <= teams; i++) {
-      initialScores[i] = Array.from({ length: balls }, () => Array(18).fill(''));
+      initialScores[i] = Array.from({ length: balls }, () => Array(18).fill(0));
     }
     return initialScores;
   });
 
-  const updateScore = (team: number, ball: number, hole: number, score: string) => {
+  const updateScore = (team: number, ball: number, hole: number, score: number) => {
     setScores((prevScores) => {
       const newScores = { ...prevScores };
       newScores[team][ball][hole] = score;
@@ -32,12 +31,12 @@ const Game: React.FC = () => {
   };
 
   const handleScoreChange = (e: React.ChangeEvent<HTMLInputElement>, team: number, ball: number, hole: number) => {
-    const score = e.target.value;
+    const score = parseInt(e.target.value) || 0;
     updateScore(team, ball, hole, score);
   };
 
-  const calculateTotal = (ballScores: string[]): number => {
-    return ballScores.reduce((total, score) => total + (parseInt(score) || 0), 0);
+  const calculateTotal = (ballScores: number[]): number => {
+    return ballScores.reduce((total, score) => total + score, 0);
   };
 
   const handleSubmit = () => {
@@ -148,5 +147,10 @@ const Game: React.FC = () => {
   );
 };
 
-export default Game;
+const Game: React.FC = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <GameContent />
+  </Suspense>
+);
 
+export default Game;
