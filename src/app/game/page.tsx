@@ -31,8 +31,10 @@ const GameContent: React.FC = () => {
   };
 
   const handleScoreChange = (e: React.ChangeEvent<HTMLInputElement>, team: number, ball: number, hole: number) => {
-    const score = e.target.value;
-    updateScore(team, ball, hole, score);
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      updateScore(team, ball, hole, value);
+    }
   };
 
   const calculateTotal = (ballScores: (number | string)[]): number => {
@@ -71,9 +73,10 @@ const GameContent: React.FC = () => {
           rowData[`hole${holeIndex + 1}`] = (
             <input
               type="text"
-              value={score}
+              key={`team-${team}-ball-${ballIndex}-hole-${holeIndex}`}
+              value={score as string}
               onChange={(e) => handleScoreChange(e, parseInt(team), ballIndex, holeIndex)}
-              className="score-input border p-1 rounded text-center"
+              className="score-input border p-1 rounded text-center text-black"
             />
           );
         });
@@ -109,7 +112,7 @@ const GameContent: React.FC = () => {
             {headerGroups.map(headerGroup => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(column => (
-                  <th {...column.getHeaderProps()} className="px-2 py-1 bg-gray-800 text-white text-xs sm:text-sm">
+                  <th key={column.id} {...column.getHeaderProps()} className="px-2 py-1 bg-gray-800 text-white text-xs sm:text-sm">
                     {column.render('Header')}
                   </th>
                 ))}
@@ -127,9 +130,9 @@ const GameContent: React.FC = () => {
                 );
               }
               return (
-                <tr {...row.getRowProps()}>
+                <tr key={row.id} {...row.getRowProps()}>
                   {row.cells.map(cell => (
-                    <td {...cell.getCellProps()} className="px-2 py-1 bg-gray-700 text-white text-xs sm:text-sm">
+                    <td key={cell.column.id} {...cell.getCellProps()} className="px-2 py-1 bg-gray-700 text-white text-xs sm:text-sm">
                       {cell.render('Cell')}
                     </td>
                   ))}
