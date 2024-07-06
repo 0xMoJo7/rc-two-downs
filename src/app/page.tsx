@@ -1,23 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const Home: React.FC = () => {
   const [teams, setTeams] = useState<number>(4);
   const [balls, setBalls] = useState<number>(3);
-  const [betValues, setBetValues] = useState<{ [key: number]: number }>({ 1: 20, 2: 10, 3: 10 });
+  const [betValues, setBetValues] = useState<{ [key: number]: number }>({ 1: 20, 2: 10, 3: 10, 4: 10 });
 
-  useEffect(() => {
+  const handleBallsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newBalls = parseInt(e.target.value);
+    setBalls(newBalls);
     const newBetValues: { [key: number]: number } = {};
-    for (let i = 1; i <= balls; i++) {
+    for (let i = 1; i <= newBalls; i++) {
       newBetValues[i] = betValues[i] || 10;
     }
     setBetValues(newBetValues);
-  }, [balls]);
-
-  const handleBallsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setBalls(parseInt(e.target.value));
   };
 
   return (

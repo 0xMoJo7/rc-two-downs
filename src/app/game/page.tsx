@@ -49,25 +49,26 @@ const GameContent: React.FC = () => {
     const calculateForRange = (start: number, end: number) => {
       let results: string[] = [];
       let totalSum = 0;
-      for (let i = 1; i <= teams; i++) {
-        for (let j = i + 1; j <= teams; j++) {
-          for (let ball = 0; ball < balls; ball++) {
+
+      for (let ball = 0; ball < balls; ball++) {
+        for (let i = 1; i <= teams; i++) {
+          for (let j = i + 1; j <= teams; j++) {
             let team1Wins = 0;
             let team2Wins = 0;
             let currentBets = [0];
+
             for (let hole = start; hole <= end; hole++) {
               const team1Score = parseInt(scores[i][ball][hole - 1] as string) || 0;
               const team2Score = parseInt(scores[j][ball][hole - 1] as string) || 0;
+
               if (team1Score < team2Score) {
                 team1Wins++;
                 currentBets = currentBets.map(bet => bet + 1);
+                if (currentBets[0] === 2) currentBets.unshift(0);
               } else if (team1Score > team2Score) {
                 team2Wins++;
                 currentBets = currentBets.map(bet => bet - 1);
-              }
-              currentBets = currentBets.filter(bet => Math.abs(bet) < 2);
-              if (team1Wins - team2Wins >= 2) {
-                currentBets.push(0);
+                currentBets = currentBets.filter(bet => bet >= 0);
               }
             }
 
@@ -85,22 +86,22 @@ const GameContent: React.FC = () => {
               }
             });
 
-            if (team1Wins > team2Wins && team1Wins - team2Wins === 1 && end === 9 || end === 18) {
+            if (team1Wins > team2Wins && team1Wins - team2Wins === 1 && (end === 9 || end === 18)) {
               netWinnings += betValue;
             }
 
-            let summary = currentBets.map(bet => bet + (bet > 0 ? '-0' : '')).join(' ');
             totalSum += netWinnings;
 
             results.push(
-              `Ball ${ball + 1} (${betValue}$) Team ${i} vs Team ${j} (Holes ${start}-${end}): ` +
-              `<span class="font-bold">${team1Wins} - ${team2Wins}</span> : ` +
+              `Ball ${ball + 1} (${betValue}$) Team ${i} vs Team ${j} ` +
+              `<span class="font-bold">${team1Wins} - ${team2Wins}</span> -- ` +
               `<span class="${netWinnings > 0 ? 'text-green-500' : 'text-red-500'}">` +
-              `${netWinnings > 0 ? '+' : ''}${netWinnings}$</span>`
+              `${netWinnings}$</span>`
             );
           }
         }
       }
+
       return { results, totalSum };
     };
 
@@ -214,14 +215,16 @@ const GameContent: React.FC = () => {
       <Link href="/">
         <button className="button max-w-xs mt-4">Back to Game Setup</button>
       </Link>
-      <div className="mt-8">
+      <div className="mt-8 text-center">
         <h2 className="text-xl font-bold mb-4">Bet Results</h2>
-        <ul>
+        <ul className="text-center">
           {bets.map((bet, index) => (
             <li key={index} className="mb-2" dangerouslySetInnerHTML={{ __html: bet }}></li>
           ))}
         </ul>
-        <h2 className="text-xl font-bold mt-4">Total: {totalSum >= 0 ? '+' : ''}{totalSum}$</h2>
+        <h2 className="text-xl font-bold">
+          Total won by {totalSum > 0 ? 'Team 1' : 'Team 2'}: <span className={totalSum > 0 ? 'text-green-500' : 'text-red-500'}>${Math.abs(totalSum)}</span>
+        </h2>
       </div>
     </div>
   );
